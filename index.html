@@ -1,0 +1,87 @@
+
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CaptionCraft</title>
+<style>
+body{font-family:Arial,sans-serif;background:#f3eaff;margin:0;color:#291544}
+header{background:#5525a8;color:white;text-align:center;padding:24px 10px}
+main{max-width:500px;margin:25px auto;padding:15px}
+section{background:white;padding:20px;border-radius:16px}
+input,select,button{box-sizing:border-box;width:100%;padding:13px;margin:10px 0;border-radius:9px;font-size:16px}
+input,select{border:1px solid #ccc}
+button{background:#713be5;color:white;border:0}
+#result{white-space:pre-wrap;overflow-wrap:anywhere;margin-top:20px}
+</style>
+</head>
+<body>
+<header>
+<h1>✨ CaptionCraft</h1>
+<p>Instagram Caption Generator</p>
+<p>Hindi • English • Marathi</p>
+</header>
+<main>
+<section>
+<h2>अपना कैप्शन बनाओ ❤️</h2>
+<input id="topic" placeholder="पोस्ट का विषय लिखो">
+<select id="lang">
+<option value="hi">हिंदी</option>
+<option value="en">English</option>
+<option value="mr">मराठी</option>
+</select>
+<select id="kind">
+<option value="attitude">Attitude 😎</option>
+<option value="love">Love ❤️</option>
+<option value="birthday">Birthday 🎂</option>
+<option value="devotion">भक्ति 🙏</option>
+<option value="motivation">Motivation 🔥</option>
+</select>
+<button onclick="makeCaption()">कैप्शन बनाओ ✨</button>
+<div id="result"></div>
+<button id="copy" hidden onclick="copyCaption()">कैप्शन कॉपी करो 📋</button>
+</section>
+</main>
+<script>
+const captions={
+hi:{
+attitude:"अपना अंदाज़, अपनी पहचान 😎",
+love:"कुछ पल, कुछ यादें और ढेर सारा प्यार ❤️",
+birthday:"जन्मदिन की खुशियाँ हमेशा बनी रहें 🎂",
+devotion:"मन में श्रद्धा, भगवान पर विश्वास 🙏",
+motivation:"मेहनत करते रहो, आगे बढ़ते रहो 🔥"},
+en:{
+attitude:"My vibe, my rules 😎",
+love:"Little moments, endless love ❤️",
+birthday:"New year, new memories. Happy Birthday 🎂",
+devotion:"Faith in my heart, peace in my soul 🙏",
+motivation:"Dream big. Keep moving forward 🔥"},
+mr:{
+attitude:"माझा अंदाज, माझी ओळख 😎",
+love:"छोटे क्षण, भरपूर प्रेम ❤️",
+birthday:"वाढदिवसाच्या खूप साऱ्या शुभेच्छा 🎂",
+devotion:"मनात श्रद्धा, देवावर विश्वास 🙏",
+motivation:"प्रयत्न करत राहा, पुढे जात राहा 🔥"}
+};
+let finalCaption="";
+function makeCaption(){
+let topic=document.getElementById("topic").value.trim();
+if(!topic){alert("आधी पोस्टचा विषय लिहा!");return;}
+let lang=document.getElementById("lang").value;
+let kind=document.getElementById("kind").value;
+finalCaption=captions[lang][kind]+"\n\n#"+topic.replace(/\s+/g,"")+" #Instagram";
+document.getElementById("result").textContent=finalCaption;
+document.getElementById("copy").hidden=false;
+}
+async function copyCaption(){
+try{
+await navigator.clipboard.writeText(finalCaption);
+alert("कैप्शन कॉपी हो गया!");
+}catch(e){
+alert("कैप्शन को दबाकर रखें और Copy चुनें।");
+}
+}
+</script>
+</body>
+</html>
