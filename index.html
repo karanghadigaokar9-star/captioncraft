@@ -6,80 +6,104 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>CaptionCraft</title>
 <style>
-body{font-family:Arial,sans-serif;background:#f3eaff;margin:0;color:#291544}
-header{background:#5525a8;color:white;text-align:center;padding:24px 10px}
-main{max-width:500px;margin:25px auto;padding:15px}
-section{background:white;padding:20px;border-radius:16px}
-input,select,button{box-sizing:border-box;width:100%;padding:13px;margin:10px 0;border-radius:9px;font-size:16px}
-input,select{border:1px solid #ccc}
-button{background:#713be5;color:white;border:0}
-#result{white-space:pre-wrap;overflow-wrap:anywhere;margin-top:20px}
+body{font-family:Arial,sans-serif;background:#f3edff;margin:0;padding:20px;color:#24163b}
+main{max-width:480px;margin:25px auto;background:white;padding:22px;border-radius:20px;box-shadow:0 5px 22px #ddd}
+h1{text-align:center;color:#6d28d9;margin-bottom:5px}
+p{text-align:center;color:#666}
+label{display:block;margin-top:16px;font-weight:bold}
+input,select,button{box-sizing:border-box;width:100%;padding:13px;margin-top:8px;border-radius:10px;font-size:16px}
+input,select{border:1px solid #ccc;background:white}
+button{border:0;background:#6d28d9;color:white;font-weight:bold;cursor:pointer}
+#copy{background:#16803d;margin-top:10px}
+#result{background:#f5f0ff;padding:16px;border-radius:12px;margin-top:18px;white-space:pre-wrap;overflow-wrap:anywhere}
+small{display:block;text-align:center;margin-top:20px;color:#777}
 </style>
 </head>
 <body>
-<header>
+<main>
 <h1>✨ CaptionCraft</h1>
 <p>Instagram Caption Generator</p>
-<p>Hindi • English • Marathi</p>
-</header>
-<main>
-<section>
-<h2>अपना कैप्शन बनाओ ❤️</h2>
-<input id="topic" placeholder="पोस्ट का विषय लिखो">
+
+<label for="topic">पोस्ट का विषय लिखो</label>
+<input id="topic" placeholder="जैसे मेरी नई फोटो">
+
+<label for="lang">भाषा चुनो</label>
 <select id="lang">
 <option value="hi">हिंदी</option>
-<option value="en">English</option>
 <option value="mr">मराठी</option>
+<option value="en">English</option>
 </select>
-<select id="kind">
+
+<label for="category">कैटेगरी चुनो</label>
+<select id="category">
 <option value="attitude">Attitude 😎</option>
 <option value="love">Love ❤️</option>
 <option value="birthday">Birthday 🎂</option>
-<option value="devotion">भक्ति 🙏</option>
-<option value="motivation">Motivation 🔥</option>
+<option value="travel">Travel 🌍</option>
+<option value="general">Instagram ✨</option>
 </select>
-<button onclick="makeCaption()">कैप्शन बनाओ ✨</button>
-<div id="result"></div>
-<button id="copy" hidden onclick="copyCaption()">कैप्शन कॉपी करो 📋</button>
-</section>
+
+<button onclick="generate()">कैप्शन बनाओ ✨</button>
+<div id="result" aria-live="polite">तुम्हारा कैप्शन यहाँ दिखाई देगा।</div>
+<button id="copy" onclick="copyCaption()">📋 Copy Caption</button>
+<small>Made with ❤️ CaptionCraft</small>
 </main>
+
 <script>
-const captions={
-hi:{
-attitude:"अपना अंदाज़, अपनी पहचान 😎",
-love:"कुछ पल, कुछ यादें और ढेर सारा प्यार ❤️",
-birthday:"जन्मदिन की खुशियाँ हमेशा बनी रहें 🎂",
-devotion:"मन में श्रद्धा, भगवान पर विश्वास 🙏",
-motivation:"मेहनत करते रहो, आगे बढ़ते रहो 🔥"},
-en:{
-attitude:"My vibe, my rules 😎",
-love:"Little moments, endless love ❤️",
-birthday:"New year, new memories. Happy Birthday 🎂",
-devotion:"Faith in my heart, peace in my soul 🙏",
-motivation:"Dream big. Keep moving forward 🔥"},
-mr:{
-attitude:"माझा अंदाज, माझी ओळख 😎",
-love:"छोटे क्षण, भरपूर प्रेम ❤️",
-birthday:"वाढदिवसाच्या खूप साऱ्या शुभेच्छा 🎂",
-devotion:"मनात श्रद्धा, देवावर विश्वास 🙏",
-motivation:"प्रयत्न करत राहा, पुढे जात राहा 🔥"}
-};
-let finalCaption="";
-function makeCaption(){
-let topic=document.getElementById("topic").value.trim();
-if(!topic){alert("आधी पोस्टचा विषय लिहा!");return;}
-let lang=document.getElementById("lang").value;
-let kind=document.getElementById("kind").value;
-finalCaption=captions[lang][kind]+"\n\n#"+topic.replace(/\s+/g,"")+" #Instagram";
-document.getElementById("result").textContent=finalCaption;
-document.getElementById("copy").hidden=false;
+let lastCaption = "";
+
+const captions = {
+hi: {
+attitude:["अपना अंदाज़, अपनी पहचान 😎","खुद की कहानी, अपने अंदाज़ में 🔥","मेरी पहचान मेरा आत्मविश्वास 💯"],
+love:["दिल की बात, बस तुम्हारे साथ ❤️","कुछ एहसास शब्दों से बढ़कर होते हैं ✨","मुस्कान की वजह खास है 💕"],
+birthday:["आज का दिन खुशियों के नाम 🎂","नई उम्र, नई यादें, नई शुरुआत 🎉","जन्मदिन की ढेर सारी खुशियाँ 🎈"],
+travel:["नए रास्ते, नई यादें 🌍","सफर खूबसूरत हो तो मंज़िल खास बनती है ✨","घूमो, सीखो और यादें बनाओ 📸"],
+general:["छोटे पल, खूबसूरत यादें 📸","अपनी दुनिया, अपनी खुशी ✨","हर दिन एक नई शुरुआत 🌟"]
+},
+mr: {
+attitude:["आपली स्टाईल, आपली ओळख 😎","स्वतःची ओळख स्वतः निर्माण करायची 🔥","आत्मविश्वास हाच खरा रुबाब 💯"],
+love:["मनातलं नातं, शब्दांच्या पलीकडचं ❤️","तुझ्या हसण्यात माझा आनंद ✨","काही क्षण कायम मनात राहतात 💕"],
+birthday:["वाढदिवसाच्या खूप खूप शुभेच्छा 🎂","नवीन वर्ष, नवीन स्वप्नं 🎉","आनंदाने भरलेला खास दिवस 🎈"],
+travel:["नवीन वाटा, नवीन आठवणी 🌍","भटकंतीतच आनंद सापडतो ✨","प्रत्येक प्रवास काहीतरी शिकवतो 📸"],
+general:["छोटे क्षण, सुंदर आठवणी 📸","आपलं आयुष्य, आपला आनंद ✨","प्रत्येक दिवस खास बनवा 🌟"]
+},
+en: {
+attitude:["My style, my identity 😎","Confidence is my signature 🔥","Creating my own story 💯"],
+love:["Some feelings go beyond words ❤️","Your smile makes my day ✨","Little moments, big feelings 💕"],
+birthday:["A new year, a new chapter 🎂","Making birthday memories 🎉","Wishing you joy and smiles 🎈"],
+travel:["New places, new memories 🌍","Collect moments, not just photos ✨","Adventure starts here 📸"],
+general:["Little moments, lasting memories 📸","Living life my way ✨","Every day is a fresh start 🌟"]
 }
+};
+
+function generate(){
+const topic=document.getElementById("topic").value.trim();
+const lang=document.getElementById("lang").value;
+const category=document.getElementById("category").value;
+const options=captions[lang][category];
+const caption=options[Math.floor(Math.random()*options.length)];
+const tags={
+hi:"#Instagram #मेरीनईफोटो #यादें",
+mr:"#Instagram #आठवणी #माझाफोटो",
+en:"#Instagram #NewPhoto #GoodVibes"
+};
+lastCaption=(topic ? topic+" — " : "")+caption+"\n\n"+tags[lang];
+document.getElementById("result").textContent=lastCaption;
+}
+
 async function copyCaption(){
+if(!lastCaption){generate();}
 try{
-await navigator.clipboard.writeText(finalCaption);
-alert("कैप्शन कॉपी हो गया!");
+await navigator.clipboard.writeText(lastCaption);
+document.getElementById("copy").textContent="✅ Copied!";
 }catch(e){
-alert("कैप्शन को दबाकर रखें और Copy चुनें।");
+const area=document.createElement("textarea");
+area.value=lastCaption;
+document.body.appendChild(area);
+area.select();
+const ok=document.execCommand("copy");
+area.remove();
+document.getElementById("copy").textContent=ok?"✅ Copied!":"कैप्शन को दबाकर कॉपी करें";
 }
 }
 </script>
